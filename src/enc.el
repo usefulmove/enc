@@ -7,8 +7,7 @@
 ;; Created: August 23, 2023
 ;; Modified: August 24, 2023
 ;; Version: 0.0.1
-;; Keywords: extensions data processes tools
-(print finder-known-keywords)
+;; Keywords: extensions files data processes tools
 ;; Homepage: https://github.com/dedmonds/enc
 ;; Package-Requires: ((emacs "24.3"))
 ;;
