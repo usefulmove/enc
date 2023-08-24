@@ -20,6 +20,30 @@
 ;;; Code:
 
 
+; update-buffer
+(defun update-buffer (cstream)
+  (todo))
+
+
+; encrypt :: [char] -> encryption-key -> [char]
+(defun encrypt (cstream encryption-key)
+  )
+
+
+; enc - encrypt buffer contents
+(defun enc (encryption-key)
+  (interactive)
+  (let* ((cstream (read-buffer)) ; read current buffer as character stream
+         (encrypted (encrypt cstream encryption-key)))
+        ; replace buffer contents with encrypted stream
+        (update-buffer encrypted)))
+
+;
+; enc-d - decrypt buffer contents
+(defun enc-d (encryption-key)
+  (interactive)
+  (enc (- encryption-key)))
+
 
 (provide 'enc)
 ;;; enc.el ends here
