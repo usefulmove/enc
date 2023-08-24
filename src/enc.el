@@ -22,25 +22,32 @@
 
 ; update-buffer
 (defun update-buffer (cstream)
-  (todo))
+  "replace the contents of the current buffer with character stream"
+  (TODO))
 
 
-; encrypt :: [char] -> encryption-key -> [char]
-(defun encrypt (cstream encryption-key)
-  )
+; encrypt :: encryption-key -> [char] -> [char]
+(defun encrypt (encryption-key cstream) ; here
+  "encrypt character stream"
+  (reverse cstream))
+
+(encrypt 8 '(3 1 2))
 
 
-; enc - encrypt buffer contents
+
+; enc :: interactive command
 (defun enc (encryption-key)
+  "encrypt buffer contents"
   (interactive)
-  (let* ((cstream (read-buffer)) ; read current buffer as character stream
-         (encrypted (encrypt cstream encryption-key)))
+  (let* ((cstream (read-buffer-contents)) ; read current buffer as character stream
+         (encrypted (encrypt encryption-key cstream)))
         ; replace buffer contents with encrypted stream
         (update-buffer encrypted)))
 
 ;
-; enc-d - decrypt buffer contents
+; enc-d :: interactive command
 (defun enc-d (encryption-key)
+  "decrypt buffer contents"
   (interactive)
   (enc (- encryption-key)))
 
