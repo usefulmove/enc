@@ -1,4 +1,4 @@
-;;; enc.el --- buffer encryption -*- lexical-binding: t; -*-
+;;; enc.el --- Buffer encryption -*- lexical-binding: t; -*-
 ;;
 ;; Copyright (c) 2023 Robert Duane Edmonds
 ;;
@@ -25,10 +25,21 @@
   "read the contents of the current buffer"
   (buffer-substring-no-properties (point-min) (point-max)))
 
-; encrypt :: encryption-key -> [char] -> [char]
-(defun encrypt (encryption-key cstream) ; here
+; enc-encrypt-char-with-key :: encryption-key -> (char -> char)
+(defun enc-encrypt-char-with-key (encryption-key)
+  "key-specific character encryption function decorator"
+  (lambda (ord)
+    (let* ((base 32)
+           (cap 127)
+           (range (- cap base)))
+      (cond ((or (< ord base) (> ord (- cap 1))) ord) ; only modify characters in range
+            (t (+ base (mod (+ (- ord base) encryption-key) range)))))))
+
+; enc-encrypt-cstream :: encryption-key -> [char] -> [char]
+(defun enc-encrypt-cstream (encryption-key cstream)
   "encrypt character stream"
-  (reverse cstream)) ; TODO - replace with full implementation
+  (let ((encrypt-char (enc-encrypt-char-with-key encryption-key)))
+    (reverse (mapcar encrypt-char cstream))))
 
 ; enc-update-buffer :: string -> nil (impure)
 (defun enc-update-buffer (s)
@@ -43,20 +54,22 @@
 
 
 
-; enc-encrypt :: interactive command
+; (interactive command)
+; enc-encrypt :: string -> nil (impure)
 (defun enc-encrypt (encryption-key)
   "Encrypt buffer contents."
   (interactive "sEnter encryption key: ")
   (let* ((cstream (string-to-list (enc-read-buffer-contents)))
-         (encrypted (encrypt (string-to-number encryption-key) cstream)))
+         (encrypted (enc-encrypt-cstream (string-to-number encryption-key) cstream)))
     ; replace buffer contents with encrypted stream
     (enc-update-buffer (enc-list-to-string encrypted))))
 
-; enc-decrypt :: interactive command
+; (interactive command)
+; enc-decrypt :: string -> nil (impure)
 (defun enc-decrypt (encryption-key)
   "Decrypt buffer contents."
   (interactive "sEnter encryption key: ")
-  (enc-encrypt (- (string-to-number encryption-key))))
+  (enc-encrypt (number-to-string (- (string-to-number encryption-key)))))
 
 
 
