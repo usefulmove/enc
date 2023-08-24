@@ -47,7 +47,7 @@
 (defun enc-encrypt (encryption-key)
   "Encrypt buffer contents."
   (interactive "sEnter encryption key: ")
-  (let* ((cstream (string-to-list (enc-read-buffer-contents))) ; read current buffer as character stream
+  (let* ((cstream (string-to-list (enc-read-buffer-contents)))
          (encrypted (encrypt (string-to-number encryption-key) cstream)))
     ; replace buffer contents with encrypted stream
     (enc-update-buffer (enc-list-to-string encrypted))))
