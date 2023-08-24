@@ -5,7 +5,7 @@
 ;; Author: Duane Edmonds <dedmonds@gmail.com>
 ;; Maintainer: Duane Edmonds <dedmonds@gmail.com>
 ;; Created: August 23, 2023
-;; Modified: August 23, 2023
+;; Modified: August 24, 2023
 ;; Version: 0.0.1
 ;; Keywords: buffer encryption decryption
 ;; Homepage: https://github.com/dedmonds/enc
@@ -19,37 +19,43 @@
 ;;
 ;;; Code:
 
-
-; update-buffer
-(defun update-buffer (cstream)
-  "replace the contents of the current buffer with character stream"
-  (TODO))
-
+; read-buffer-contents :: nil -> string
+(defun read-buffer-contents ()
+  "read the contents of the current buffer"
+  (buffer-substring-no-properties (point-min) (point-max)))
 
 ; encrypt :: encryption-key -> [char] -> [char]
 (defun encrypt (encryption-key cstream) ; here
   "encrypt character stream"
-  (reverse cstream))
+  (reverse cstream)) ; TODO - replace with full implementation
 
-(encrypt 8 '(3 1 2))
+; update-buffer :: string -> nil (impure)
+(defun update-buffer (s)
+  "replace the contents of the current buffer with character stream"
+  s) ; TODO - implement me
+
+; list-to-string :: [char] -> string
+(defun list-to-string (lst)
+  "join characters in list into a concatenated string"
+  (apply 'concat (mapcar 'char-to-string lst)))
 
 
 
-; enc :: interactive command
-(defun enc (encryption-key)
+; enc-encrypt :: interactive command
+(defun enc-encrypt (encryption-key)
   "encrypt buffer contents"
   (interactive)
-  (let* ((cstream (read-buffer-contents)) ; read current buffer as character stream
+  (let* ((cstream (string-to-list (read-buffer-contents))) ; read current buffer as character stream
          (encrypted (encrypt encryption-key cstream)))
-        ; replace buffer contents with encrypted stream
-        (update-buffer encrypted)))
+    ; replace buffer contents with encrypted stream
+    (update-buffer (list-to-string encrypted))))
 
-;
-; enc-d :: interactive command
-(defun enc-d (encryption-key)
+; enc-decrypt :: interactive command
+(defun enc-decrypt (encryption-key)
   "decrypt buffer contents"
   (interactive)
-  (enc (- encryption-key)))
+  (enc-encrypt (- encryption-key)))
+
 
 
 (provide 'enc)
