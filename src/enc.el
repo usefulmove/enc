@@ -1,4 +1,4 @@
-;;; enc.el --- emacs buffer encryption -*- lexical-binding: t; -*-
+;;; enc.el --- buffer encryption -*- lexical-binding: t; -*-
 ;;
 ;; Copyright (c) 2023 Robert Duane Edmonds
 ;;
@@ -7,7 +7,8 @@
 ;; Created: August 23, 2023
 ;; Modified: August 24, 2023
 ;; Version: 0.0.1
-;; Keywords: buffer encryption decryption
+;; Keywords: extensions data processes tools
+(print finder-known-keywords)
 ;; Homepage: https://github.com/dedmonds/enc
 ;; Package-Requires: ((emacs "24.3"))
 ;;
@@ -15,12 +16,13 @@
 ;;
 ;;; Commentary:
 ;;
-;;  Description: emacs buffer encryption
+;;  Description: buffer encryption
 ;;
 ;;; Code:
 
-; read-buffer-contents :: nil -> string
-(defun read-buffer-contents ()
+
+; enc-read-buffer-contents :: nil -> string
+(defun enc-read-buffer-contents ()
   "read the contents of the current buffer"
   (buffer-substring-no-properties (point-min) (point-max)))
 
@@ -29,14 +31,14 @@
   "encrypt character stream"
   (reverse cstream)) ; TODO - replace with full implementation
 
-; update-buffer :: string -> nil (impure)
-(defun update-buffer (s)
+; enc-update-buffer :: string -> nil (impure)
+(defun enc-update-buffer (s)
   "replace the contents of the current buffer with character stream"
   (delete-region (point-min) (point-max))
   (insert s))
 
-; list-to-string :: [char] -> string
-(defun list-to-string (lst)
+; enc-list-to-string :: [char] -> string
+(defun enc-list-to-string (lst)
   "join characters in list into a concatenated string"
   (apply 'concat (mapcar 'char-to-string lst)))
 
@@ -46,10 +48,10 @@
 (defun enc-encrypt (encryption-key)
   "Encrypt buffer contents."
   (interactive "sEnter encryption key: ")
-  (let* ((cstream (string-to-list (read-buffer-contents))) ; read current buffer as character stream
+  (let* ((cstream (string-to-list (enc-read-buffer-contents))) ; read current buffer as character stream
          (encrypted (encrypt (string-to-number encryption-key) cstream)))
     ; replace buffer contents with encrypted stream
-    (update-buffer (list-to-string encrypted))))
+    (enc-update-buffer (enc-list-to-string encrypted))))
 
 ; enc-decrypt :: interactive command
 (defun enc-decrypt (encryption-key)
