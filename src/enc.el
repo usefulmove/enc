@@ -32,7 +32,8 @@
 ; update-buffer :: string -> nil (impure)
 (defun update-buffer (s)
   "replace the contents of the current buffer with character stream"
-  s) ; TODO - implement me
+  (delete-region (point-min) (point-max))
+  (insert s))
 
 ; list-to-string :: [char] -> string
 (defun list-to-string (lst)
@@ -43,18 +44,18 @@
 
 ; enc-encrypt :: interactive command
 (defun enc-encrypt (encryption-key)
-  "encrypt buffer contents"
-  (interactive)
+  "Encrypt buffer contents."
+  (interactive "sEnter encryption key: ")
   (let* ((cstream (string-to-list (read-buffer-contents))) ; read current buffer as character stream
-         (encrypted (encrypt encryption-key cstream)))
+         (encrypted (encrypt (string-to-number encryption-key) cstream)))
     ; replace buffer contents with encrypted stream
     (update-buffer (list-to-string encrypted))))
 
 ; enc-decrypt :: interactive command
 (defun enc-decrypt (encryption-key)
-  "decrypt buffer contents"
-  (interactive)
-  (enc-encrypt (- encryption-key)))
+  "Decrypt buffer contents."
+  (interactive "sEnter encryption key: ")
+  (enc-encrypt (- (string-to-number encryption-key))))
 
 
 
