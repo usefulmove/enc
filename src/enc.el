@@ -20,12 +20,12 @@
 ;;; Code:
 
 
-; enc-read-buffer-contents :: nil -> string
+;; enc-read-buffer-contents :: nil -> string
 (defun enc-read-buffer-contents ()
   "read the contents of the current buffer"
   (buffer-substring-no-properties (point-min) (point-max)))
 
-; enc-encrypt-char-with-key :: encryption-key -> (char -> char)
+;; enc-encrypt-char-with-key :: encryption-key -> (char -> char)
 (defun enc-encrypt-char-with-key (encryption-key)
   "key-specific character encryption function decorator"
   (lambda (ord)
@@ -35,27 +35,27 @@
       (cond ((or (< ord base) (> ord (- cap 1))) ord) ; only modify characters in range
             (t (+ base (mod (+ (- ord base) encryption-key) range)))))))
 
-; enc-encrypt-cstream :: encryption-key -> [char] -> [char]
+;; enc-encrypt-cstream :: encryption-key -> [char] -> [char]
 (defun enc-encrypt-cstream (encryption-key cstream)
   "encrypt character stream"
   (let ((encrypt-char (enc-encrypt-char-with-key encryption-key)))
     (reverse (mapcar encrypt-char cstream))))
 
-; enc-update-buffer :: string -> nil (impure)
+;; enc-update-buffer :: string -> nil (impure)
 (defun enc-update-buffer (s)
   "replace the contents of the current buffer with character stream"
   (delete-region (point-min) (point-max))
   (insert s))
 
-; enc-list-to-string :: [char] -> string
+;; enc-list-to-string :: [char] -> string
 (defun enc-list-to-string (lst)
   "join characters in list into a concatenated string"
   (apply 'concat (mapcar 'char-to-string lst)))
 
 
 
-; (interactive command)
-; enc-encrypt :: string -> nil (impure)
+;; (interactive command)
+;; enc-encrypt :: string -> nil (impure)
 (defun enc-encrypt (encryption-key)
   "Encrypt buffer contents."
   (interactive "sEnter encryption key: ")
@@ -64,8 +64,8 @@
     ; replace buffer contents with encrypted stream
     (enc-update-buffer (enc-list-to-string encrypted))))
 
-; (interactive command)
-; enc-decrypt :: string -> nil (impure)
+;; (interactive command)
+;; enc-decrypt :: string -> nil (impure)
 (defun enc-decrypt (encryption-key)
   "Decrypt buffer contents."
   (interactive "sEnter encryption key: ")
