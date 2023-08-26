@@ -1,4 +1,4 @@
-;;; enc.el --- Buffer encryption -*- lexical-binding: t; -*-
+;;; enc.el --- Buffer and region encryption -*- lexical-binding: t; -*-
 ;;
 ;; Copyright (C) 2023 Duane Edmonds
 ;;
@@ -6,7 +6,7 @@
 ;; Maintainer: Duane Edmonds <duane.edmonds@gmail.com>
 ;; Created: August 23, 2023
 ;; Modified: August 26, 2023
-;; Version: 0.0.2
+;; Version: 0.0.3
 ;; Keywords: extensions files data processes tools
 ;; Homepage: https://github.com/dedmonds/enc
 ;; Package-Requires: ((emacs "24.3"))
@@ -15,12 +15,14 @@
 ;;
 ;;; Commentary:
 ;;
-;;  Description: buffer encryption
+;;  Description: buffer and region encryption
 ;;
 ;;; Code:
 
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; core functions
+
 
 ;; enc-read-buffer-contents :: nil -> string
 (defun enc-read-buffer-contents ()
@@ -53,31 +55,40 @@
   (insert s))
 
 
-;; enc-list-to-string :: [char] -> string
-(defun enc-list-to-string (lst)
-  "Join characters in list into a concatenated string."
-  (apply 'concat (mapcar 'char-to-string lst)))
+;; enc-join-chars :: [char] -> string
+(defun enc-join-chars (chars)
+  (apply 'string chars))
+
+
+;; enc-string-negate :: string -> string
+(defun enc-string-negate (s)
+  "Negate value stored as string."
+  (let* ((chars (string-to-list s)))
+    (enc-join-chars (cond ((equal ?- (car chars)) (cdr chars))
+                          (t (cons ?- chars))))))
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; interactive commands
+
 
 ;; enc-encrypt-buffer :: string -> nil (impure)
 (defun enc-encrypt-buffer (encryption-key-string)
   "Encrypt contents of current buffer."
   (interactive "sEnter encryption key: ")
   (let* ((chars (string-to-list (enc-read-buffer-contents)))
-         (encrypted-chars (enc-encrypt-chars (string-to-number encryption-key-string)
-                                             chars)))
+         (encrypted-chars (enc-encrypt-chars
+                            (string-to-number encryption-key-string)
+                            chars)))
     ; replace buffer contents with encrypted character stream
-    (enc-update-buffer (enc-list-to-string encrypted-chars))))
+    (enc-update-buffer (enc-join-chars encrypted-chars))))
 
-;;
+
 ;; enc-decrypt-buffer :: string -> nil (impure)
 (defun enc-decrypt-buffer (encryption-key-string)
   "Decrypt contents of current buffer."
-  (interactive "sEnter encryption key: ")
-  (enc-encrypt-buffer (number-to-string (- (string-to-number encryption-key-string)))))
+  (interactive "sEnter decryption key: ")
+  (enc-encrypt-buffer (enc-string-negate encryption-key-string)))
 
 
 
@@ -85,18 +96,21 @@
 (defun enc-encrypt-region (encryption-key-string)
   "Encrypt contents of selected region."
   (interactive "sEnter encryption key: ")
-    (let* ((chars (string-to-list (buffer-substring (region-beginning) (region-end))))
-           (encrypted-chars (enc-encrypt-chars (string-to-number encryption-key-string)
-                                               chars)))
+    (let* ((chars (string-to-list (buffer-substring
+                                    (region-beginning)
+                                    (region-end))))
+           (encrypted-chars (enc-encrypt-chars
+                              (string-to-number encryption-key-string)
+                              chars)))
       (delete-region (region-beginning) (region-end))
-      (insert (enc-list-to-string encrypted-chars))))
+      (insert (enc-join-chars encrypted-chars))))
 
 
 ;; enc-decrypt-region :: string -> nil (impure)
 (defun enc-decrypt-region (encryption-key-string)
   "Decrypt contents of selected region."
-  (interactive "sEnter encryption key: ")
-  (enc-encrypt-region (number-to-string (- (string-to-number encryption-key-string)))))
+  (interactive "sEnter decryption key: ")
+  (enc-encrypt-region (enc-string-negate encryption-key-string)))
 
 
 
