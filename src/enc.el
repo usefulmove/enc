@@ -23,7 +23,6 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; core functions
 
-
 ;; enc-read-buffer-contents :: nil -> string
 (defun enc-read-buffer-contents ()
   "Read the contents of the current buffer."
@@ -71,17 +70,16 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; interactive commands
 
-
 ;; enc-encrypt-buffer :: string -> nil (impure)
 (defun enc-encrypt-buffer (encryption-key-string)
   "Encrypt contents of current buffer."
   (interactive "sEnter encryption key: ")
   (let* ((chars (string-to-list (enc-read-buffer-contents)))
-         (encrypted-chars (enc-encrypt-chars
-                            (string-to-number encryption-key-string)
-                            chars)))
+         (encryption-key (string-to-number encryption-key-string))
+         (encrypted-chars (enc-encrypt-chars encryption-key chars)))
     ; replace buffer contents with encrypted character stream
-    (enc-update-buffer (enc-join-chars encrypted-chars))))
+    (cond ((= 0 encryption-key) (message "error: invalid key (enc)"))
+          (t (enc-update-buffer (enc-join-chars encrypted-chars))))))
 
 
 ;; enc-decrypt-buffer :: string -> nil (impure)
@@ -99,11 +97,12 @@
     (let* ((chars (string-to-list (buffer-substring
                                     (region-beginning)
                                     (region-end))))
-           (encrypted-chars (enc-encrypt-chars
-                              (string-to-number encryption-key-string)
-                              chars)))
-      (delete-region (region-beginning) (region-end))
-      (insert (enc-join-chars encrypted-chars))))
+           (encryption-key (string-to-number encryption-key-string))
+           (encrypted-chars (enc-encrypt-chars encryption-key chars)))
+      (cond ((= 0 encryption-key) (message "error: invalid key (enc)"))
+            (t (progn
+                 (delete-region (region-beginning) (region-end))
+                 (insert (enc-join-chars encrypted-chars)))))))
 
 
 ;; enc-decrypt-region :: string -> nil (impure)
