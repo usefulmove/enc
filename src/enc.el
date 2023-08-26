@@ -5,8 +5,8 @@
 ;; Author: Duane Edmonds <duane.edmonds@gmail.com>
 ;; Maintainer: Duane Edmonds <duane.edmonds@gmail.com>
 ;; Created: August 23, 2023
-;; Modified: August 25, 2023
-;; Version: 0.0.1
+;; Modified: August 26, 2023
+;; Version: 0.0.2
 ;; Keywords: extensions files data processes tools
 ;; Homepage: https://github.com/dedmonds/enc
 ;; Package-Requires: ((emacs "24.3"))
@@ -60,20 +60,38 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; interactive commands
 
-;; enc-encrypt :: string -> nil (impure)
-(defun enc-encrypt (encryption-key)
-  "Encrypt buffer contents."
+;; enc-encrypt-buffer :: string -> nil (impure)
+(defun enc-encrypt-buffer (encryption-key-string)
+  "Encrypt contents of current buffer."
   (interactive "sEnter encryption key: ")
   (let* ((chars (string-to-list (enc-read-buffer-contents)))
-         (encrypted (enc-encrypt-cstream (string-to-number encryption-key) chars)))
+         (encrypted-chars (enc-encrypt-cstream (string-to-number encryption-key-string) chars)))
     ; replace buffer contents with encrypted stream
-    (enc-update-buffer (enc-list-to-string encrypted))))
+    (enc-update-buffer (enc-list-to-string encrypted-chars))))
 
-;; enc-decrypt :: string -> nil (impure)
-(defun enc-decrypt (encryption-key)
-  "Decrypt buffer contents."
+;; enc-decrypt-buffer :: string -> nil (impure)
+(defun enc-decrypt-buffer (encryption-key-string)
+  "Decrypt contents of current buffer."
   (interactive "sEnter encryption key: ")
-  (enc-encrypt (number-to-string (- (string-to-number encryption-key)))))
+  (enc-encrypt-buffer (number-to-string (- (string-to-number encryption-key-string)))))
+
+
+
+;; enc-encrypt-region :: string -> nil (impure) TODO complete and test
+(defun enc-encrypt-region (encryption-key-string)
+  "Encrypt contents of selected region."
+  (interactive "sEnter encryption key: ")
+    (let* ((chars (string-to-list (buffer-substring (region-beginning) (region-end))))
+           (encrypted-chars (enc-encrypt-cstream (string-to-number encryption-key-string) chars)))
+      (delete-region (region-beginning) (region-end))
+      (insert (enc-list-to-string encrypted-chars))))
+      ;(insert (reverse (enc-list-to-string chars)))))
+
+;; enc-decrypt-region :: string -> nil (impure) TODO complete and test
+(defun enc-decrypt-region (encryption-key-string)
+  "Decrypt contents of selected region."
+  (interactive "sEnter encryption key: ")
+  (enc-encrypt-region (number-to-string (- (string-to-number encryption-key-string)))))
 
 
 
