@@ -2,7 +2,7 @@
 
 **enc** provides simple buffer and region encryption and decryption for [GNU Emacs](https://www.gnu.org/software/emacs/).
 
-**Warning** Please note that the encryption method used by **enc** is not designed or intended for high-importance, high-security, or critical applications. This includes, but is not limited to, the protection of sensitive personal data, financial transactions, national security information, or any other data where unauthorized access could have severe consequences.
+**Warning**:  Please note that the encryption method used by **enc** is not designed or intended for high-importance, high-security, or critical applications. This includes, but is not limited to, the protection of sensitive personal data, financial transactions, national security information, or any other data where unauthorized access could have severe consequences.
 
 ## Table of Contents
 
