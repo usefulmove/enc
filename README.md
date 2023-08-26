@@ -1,6 +1,6 @@
-# enc . emacs buffer encryption . 
+# enc . emacs buffer and region encryption
 
-**enc** is an open source project that provides seamless integration for buffer and selected region encryption & decryption in emacs.
+**enc** provides simple buffer and region encryption and decryption for [GNU Emacs](https://www.gnu.org/software/emacs/).
 
 ## Table of Contents
 
@@ -77,4 +77,4 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ---
 
-Made with ❤️ by [your_name_or_team_name](https://github.com/your_username). Happy Encrypting! 🛡️
+Made by [usefulmove](https://github.com/usefulmove). 🛡️
