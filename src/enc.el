@@ -1,6 +1,6 @@
 ;;; enc.el --- Buffer encryption -*- lexical-binding: t; -*-
 ;;
-;; Copyright (c) 2023 Duane Edmonds
+;; Copyright (C) 2023 Duane Edmonds
 ;;
 ;; Author: Duane Edmonds <duane.edmonds@gmail.com>
 ;; Maintainer: Duane Edmonds <duane.edmonds@gmail.com>
@@ -24,36 +24,38 @@
 
 ;; enc-read-buffer-contents :: nil -> string
 (defun enc-read-buffer-contents ()
-  "read the contents of the current buffer"
+  "Read the contents of the current buffer."
   (buffer-substring-no-properties (point-min) (point-max)))
 
 ;; enc-encrypt-char-with-key :: encryption-key -> (char -> char)
 (defun enc-encrypt-char-with-key (encryption-key)
-  "key-specific character encryption function decorator"
+  "Key-specific character encryption function decorator."
   (lambda (ord)
     (let* ((base 32)
            (cap 127)
            (range (- cap base)))
-      (cond ((or (< ord base) (> ord (- cap 1))) ord) ; only modify characters in range
-            (t (+ base (mod (+ (- ord base) encryption-key) range)))))))
+      (cond ((or (< ord base)
+                 (> ord (- cap 1))) ord) ; only modify characters in range
+            (t (+ base (mod (+ (- ord base) encryption-key)
+                            range)))))))
 
-;; enc-encrypt-cstream :: encryption-key -> [char] -> [char]
-(defun enc-encrypt-cstream (encryption-key chars)
-  "encrypt character stream"
+;; enc-encrypt-chars :: encryption-key -> [char] -> [char]
+(defun enc-encrypt-chars (encryption-key chars)
+  "Encrypt character stream."
   (let ((encrypt-char (enc-encrypt-char-with-key encryption-key)))
     (reverse (mapcar encrypt-char chars))))
 
 
 ;; enc-update-buffer :: string -> nil (impure)
 (defun enc-update-buffer (s)
-  "replace the contents of the current buffer with character stream"
+  "Replace the contents of the current buffer with character stream."
   (delete-region (point-min) (point-max))
   (insert s))
 
 
 ;; enc-list-to-string :: [char] -> string
 (defun enc-list-to-string (lst)
-  "join characters in list into a concatenated string"
+  "Join characters in list into a concatenated string."
   (apply 'concat (mapcar 'char-to-string lst)))
 
 
@@ -65,10 +67,12 @@
   "Encrypt contents of current buffer."
   (interactive "sEnter encryption key: ")
   (let* ((chars (string-to-list (enc-read-buffer-contents)))
-         (encrypted-chars (enc-encrypt-cstream (string-to-number encryption-key-string) chars)))
-    ; replace buffer contents with encrypted stream
+         (encrypted-chars (enc-encrypt-chars (string-to-number encryption-key-string)
+                                             chars)))
+    ; replace buffer contents with encrypted character stream
     (enc-update-buffer (enc-list-to-string encrypted-chars))))
 
+;;
 ;; enc-decrypt-buffer :: string -> nil (impure)
 (defun enc-decrypt-buffer (encryption-key-string)
   "Decrypt contents of current buffer."
@@ -77,17 +81,18 @@
 
 
 
-;; enc-encrypt-region :: string -> nil (impure) TODO complete and test
+;; enc-encrypt-region :: string -> nil (impure)
 (defun enc-encrypt-region (encryption-key-string)
   "Encrypt contents of selected region."
   (interactive "sEnter encryption key: ")
     (let* ((chars (string-to-list (buffer-substring (region-beginning) (region-end))))
-           (encrypted-chars (enc-encrypt-cstream (string-to-number encryption-key-string) chars)))
+           (encrypted-chars (enc-encrypt-chars (string-to-number encryption-key-string)
+                                               chars)))
       (delete-region (region-beginning) (region-end))
       (insert (enc-list-to-string encrypted-chars))))
-      ;(insert (reverse (enc-list-to-string chars)))))
 
-;; enc-decrypt-region :: string -> nil (impure) TODO complete and test
+
+;; enc-decrypt-region :: string -> nil (impure)
 (defun enc-decrypt-region (encryption-key-string)
   "Decrypt contents of selected region."
   (interactive "sEnter encryption key: ")
