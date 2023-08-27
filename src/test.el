@@ -74,12 +74,12 @@
 ;; test execution
 
 (defun test-run-tests ()
-  (let ((error-prelude "enc-test ... "))
-    (message (concat error-prelude "running tests..."))
-    (test-enc-encrypt-char-with-key error-prelude) ; encrypt char
-    (test-enc-negate-string error-prelude) ; string negation
-    (test-enc-round-trip error-prelude) ; round-trip test
-    (message (concat error-prelude "passed all tests"))))
+  (let* ((prelude "enc-test ... "))
+    (message (concat prelude "running tests..."))
+    (test-enc-encrypt-char-with-key prelude) ; encrypt char
+    (test-enc-negate-string prelude) ; string negation
+    (test-enc-round-trip prelude) ; round-trip test
+    (message (concat prelude "passed all tests"))))
 
 (test-run-tests)
 
