@@ -8,7 +8,7 @@
 ;; Modified: August 26, 2023
 ;; Version: 0.0.3
 ;; Keywords: extensions files data processes tools
-;; Homepage: https://github.com/dedmonds/enc
+;; Homepage: https://github.com/usefulmove/enc
 ;; Package-Requires: ((emacs "24.3"))
 ;;
 ;; This file is not part of GNU Emacs.
@@ -28,17 +28,17 @@
   "Read the contents of the current buffer."
   (buffer-substring-no-properties (point-min) (point-max)))
 
+
 ;; enc-encrypt-char-with-key :: encryption-key -> (char -> char)
 (defun enc-encrypt-char-with-key (encryption-key)
-  "Key-specific character encryption function decorator."
+  "Key-specific single-character encryption - function decorator."
   (lambda (ord)
-    (let* ((base 32)
-           (cap 127)
-           (range (- cap base)))
+    ((lambda (base cap)
       (cond ((or (< ord base)
                  (> ord (- cap 1))) ord) ; only modify characters in range
             (t (+ base (mod (+ (- ord base) encryption-key)
-                            range)))))))
+                            (- cap base)))))) 32 127)))
+
 
 ;; enc-encrypt-chars :: encryption-key -> [char] -> [char]
 (defun enc-encrypt-chars (encryption-key chars)
