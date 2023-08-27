@@ -63,9 +63,8 @@
                 "error: round-trip encryption test(s) failed"))))
 
    (lambda (s) ; lambda :: string -> string
-     ((lambda (key)
-        (join-chars (enc-encrypt-chars (- key) (enc-encrypt-chars key (string-to-list s)))))
-      510))
+     (let ((key 313))
+       (join-chars (enc-encrypt-chars (- key) (enc-encrypt-chars key (string-to-list s))))))
 
    "lorem ipsum dolor sit amet, consectetur adipiscing elit"))
 
