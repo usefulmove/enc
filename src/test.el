@@ -24,6 +24,23 @@
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; helper functions
+
+;; fold :: (U -> T -> U) -> U -> [T] -> U
+(defun fold (f acc lst)
+  (cond ((null lst) acc)
+        (t (fold f (funcall f acc (car lst)) (cdr lst)))))
+
+;(fold (lambda (a b) (+ a b)) 0 '(3 1 2 5 4))
+;
+;(defun dec (n) (- n 1))
+;(defun half (n) (/ n 2))
+;(fold (lambda (acc f) (funcall f acc)) 5 (list 'sqrt 'dec 'half))
+
+
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; test definitions
 
 (defun test-enc-negate-string (error-prelude)
