@@ -5,8 +5,8 @@
 ;; Author: Duane Edmonds <duane.edmonds@gmail.com>
 ;; Maintainer: Duane Edmonds <duane.edmonds@gmail.com>
 ;; Created: August 26, 2023
-;; Modified: August 26, 2023
-;; Version: 0.0.2
+;; Modified: August 27, 2023
+;; Version: 0.0.3
 ;; Keywords: extensions files data processes tools
 ;; Homepage: https://github.com/usefulmove/enc
 ;; Package-Requires: ((emacs "24.3"))
@@ -31,12 +31,26 @@
   (cond ((null lst) acc)
         (t (fold f (funcall f acc (car lst)) (cdr lst)))))
 
-;(fold (lambda (a b) (+ a b)) 0 '(3 1 2 5 4))
-;
-;(defun dec (n) (- n 1))
-;(defun half (n) (/ n 2))
-;(fold (lambda (acc f) (funcall f acc)) 5 (list 'sqrt 'dec 'half))
 
+;; partial :: (... -> T -> U) -> [...] -> (T -> U)
+(defun partial (&rest args)
+  "Return unary function when passed an nary function and (- n 1) arguments."
+  (let ((f (car args))
+        (fargs (cdr args)))
+    (lambda (a)
+      (apply f (append fargs (list a))))))
+
+
+;; thread :: T -> [(T -> T)] -> T
+(defun thread (&rest args)
+  ;(message (concat (car args) (apply 'concat (cdr args)))))
+  (let ((seed (car args))
+        (fns (cdr args)))
+    (fold
+      (lambda (acc f)
+        (funcall f acc))
+      seed
+      fns)))
 
 
 
@@ -64,7 +78,11 @@
 
    (lambda (s) ; lambda :: string -> string
      (let ((key 313))
-       (join-chars (enc-encrypt-chars (- key) (enc-encrypt-chars key (string-to-list s))))))
+       (thread s
+         'string-to-list
+         (partial 'enc-encrypt-chars key)
+         (partial 'enc-encrypt-chars (- key))
+         'join-chars)))
 
    "lorem ipsum dolor sit amet, consectetur adipiscing elit"))
 
@@ -82,6 +100,7 @@
     (message (concat prelude "passed all tests"))))
 
 (test-run-tests)
+
 
 
 
