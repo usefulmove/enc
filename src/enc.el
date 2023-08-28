@@ -39,8 +39,9 @@
     (let ((base 32)
           (cap 127))
       (cond ((or (< ord base)
-                 (> ord (- cap 1))) ord) ; only modify characters in range
-            (t (+ base (mod (+ (- ord base) encryption-key)
+                 (> ord (_inc cap))) ord) ; only modify characters in range
+            (t (+ base
+                  (mod (+ (- ord base) encryption-key)
                             (- cap base))))))))
 
 
@@ -80,7 +81,7 @@
   "Encrypt contents of current buffer."
   (interactive "sEnter encryption key: ")
   (let ((encryption-key (string-to-number encryption-key-string)))
-    (cond ((= 0 encryption-key) (message "error: invalid key (enc)"))
+    (cond ((_zero? encryption-key) (message "error: invalid key (enc)"))
           (t (let ((encrypted-string (_thread (enc-read-buffer-contents)
                                        (lambda (chars)
                                           (enc-encrypt-chars encryption-key chars))
@@ -104,7 +105,7 @@
   "Encrypt contents of selected region."
   (interactive "sEnter encryption key: ")
   (let ((encryption-key (string-to-number encryption-key-string)))
-    (cond ((= 0 encryption-key) (message "error: invalid key (enc)"))
+    (cond ((_zero? encryption-key) (message "error: invalid key (enc)"))
           (t (let ((encrypted-string (_thread (buffer-substring
                                                 (region-beginning)
                                                 (region-end))

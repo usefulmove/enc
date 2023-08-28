@@ -6,7 +6,7 @@
 ;; Maintainer: Duane Edmonds <duane.edmonds@gmail.com>
 ;; Created: August 26, 2023
 ;; Modified: August 27, 2023
-;; Version: 0.0.4
+;; Version: 0.0.5
 ;; Keywords: extensions files data processes tools
 ;; Homepage: https://github.com/usefulmove/enc
 ;; Package-Requires: ((emacs "24.3"))
@@ -40,6 +40,24 @@
     (error (concat error-prelude "error: encrypt char test(s) failed"))))
 
 
+(defun test-enc-string-encryption (error-prelude)
+  ((lambda (f s s-enc)
+     (when (not (equal s-enc (funcall f s)))
+       (error (concat
+                error-prelude
+                "error: string encryption test(s) failed"))))
+
+   (lambda (s) ; lambda :: string -> string
+     (let ((key 313))
+       (_thread s
+         (lambda (chars)
+           (enc-encrypt-chars key chars))
+         'enc-join-chars)))
+
+   "lorem ipsum dolor sit amet, consectetur adipiscing elit"
+   "1&)\"<$+& 0&-&!}</21\"1 \"0+, <H1\"*}<1&0</,),!<*20-&<*\"/,)"))
+
+
 (defun test-enc-round-trip (error-prelude)
   ((lambda (f s)
      (when (not (equal s (funcall f s)))
@@ -68,7 +86,8 @@
     (message (concat prelude "running tests..."))
     (test-enc-encrypt-char-with-key prelude) ; encrypt char
     (test-enc-negate-string prelude) ; string negation
-    (test-enc-round-trip prelude) ; round-trip test
+    (test-enc-string-encryption prelude) ; string encryption
+    (test-enc-round-trip prelude) ; round-trip
     (message (concat prelude "passed all tests"))))
 
 (test-run-tests)
