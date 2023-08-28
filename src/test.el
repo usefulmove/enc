@@ -50,12 +50,11 @@
    (lambda (s) ; lambda :: string -> string
      (let ((key 313))
        (_thread s
-         'string-to-list
          (lambda (chars)
            (enc-encrypt-chars key chars))
          (lambda (chars)
            (enc-encrypt-chars (- key) chars))
-         'join-chars)))
+         'enc-join-chars)))
 
    "lorem ipsum dolor sit amet, consectetur adipiscing elit"))
 

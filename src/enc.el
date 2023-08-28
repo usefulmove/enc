@@ -6,7 +6,7 @@
 ;; Maintainer: Duane Edmonds <duane.edmonds@gmail.com>
 ;; Created: August 23, 2023
 ;; Modified: August 27, 2023
-;; Version: 0.0.4
+;; Version: 0.0.5
 ;; Keywords: extensions files data processes tools
 ;; Homepage: https://github.com/usefulmove/enc
 ;; Package-Requires: ((emacs "24.3"))
@@ -81,9 +81,8 @@
   (let ((encryption-key (string-to-number encryption-key-string)))
     (cond ((= 0 encryption-key) (message "error: invalid key (enc)"))
           (t (let ((encrypted-string (_thread (enc-read-buffer-contents)
-                                       'string-to-list
-                                       (lambda (lst)
-                                          (enc-encrypt-chars encryption-key lst))
+                                       (lambda (chars)
+                                          (enc-encrypt-chars encryption-key chars))
                                        'enc-join-chars)))
 
                (enc-update-buffer encrypted-string) ; overwrite buffer
@@ -108,7 +107,6 @@
           (t (let ((encrypted-string (_thread (buffer-substring
                                                 (region-beginning)
                                                 (region-end))
-                                       'string-to-list
                                        (lambda (chars)
                                          (enc-encrypt-chars encryption-key chars))
                                        'enc-join-chars)))
