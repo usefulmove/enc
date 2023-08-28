@@ -36,11 +36,12 @@
 (defun enc-encrypt-char-with-key (encryption-key)
   "Key-specific single-character encryption - function decorator."
   (lambda (ord)
-    ((lambda (base cap)
+    (let ((base 32)
+          (cap 127))
       (cond ((or (< ord base)
                  (> ord (- cap 1))) ord) ; only modify characters in range
             (t (+ base (mod (+ (- ord base) encryption-key)
-                            (- cap base)))))) 32 127)))
+                            (- cap base))))))))
 
 
 ;; enc-encrypt-chars :: encryption-key -> [char] -> [char]
