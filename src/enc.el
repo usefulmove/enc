@@ -5,8 +5,8 @@
 ;; Author: Duane Edmonds <duane.edmonds@gmail.com>
 ;; Maintainer: Duane Edmonds <duane.edmonds@gmail.com>
 ;; Created: August 23, 2023
-;; Modified: August 26, 2023
-;; Version: 0.0.3
+;; Modified: August 27, 2023
+;; Version: 0.0.4
 ;; Keywords: extensions files data processes tools
 ;; Homepage: https://github.com/usefulmove/enc
 ;; Package-Requires: ((emacs "24.3"))
@@ -18,6 +18,9 @@
 ;;  Description: buffer and region encryption
 ;;
 ;;; Code:
+
+(load-file "~/repos/epic/src/epic.el") ; load epic functional library
+
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -56,6 +59,7 @@
 
 ;; enc-join-chars :: [char] -> string
 (defun enc-join-chars (chars)
+  "Join character list into a string."
   (apply 'string chars))
 
 
@@ -74,12 +78,17 @@
 (defun enc-encrypt-buffer (encryption-key-string)
   "Encrypt contents of current buffer."
   (interactive "sEnter encryption key: ")
-  (let* ((chars (string-to-list (enc-read-buffer-contents)))
-         (encryption-key (string-to-number encryption-key-string))
-         (encrypted-chars (enc-encrypt-chars encryption-key chars)))
-    ; replace buffer contents with encrypted character stream
+  (let ((encryption-key (string-to-number encryption-key-string)))
     (cond ((= 0 encryption-key) (message "error: invalid key (enc)"))
-          (t (enc-update-buffer (enc-join-chars encrypted-chars))))))
+          (t (let ((encrypted-string (_thread (enc-read-buffer-contents)
+                                       'string-to-list
+                                       (lambda (lst)
+                                          (enc-encrypt-chars encryption-key lst))
+                                       'enc-join-chars)))
+
+               (enc-update-buffer encrypted-string) ; overwrite buffer
+               (message "enc: buffer encrypted/decrypted"))))))
+
 
 
 ;; enc-decrypt-buffer :: string -> nil (impure)
@@ -94,15 +103,20 @@
 (defun enc-encrypt-region (encryption-key-string)
   "Encrypt contents of selected region."
   (interactive "sEnter encryption key: ")
-    (let* ((chars (string-to-list (buffer-substring
-                                    (region-beginning)
-                                    (region-end))))
-           (encryption-key (string-to-number encryption-key-string))
-           (encrypted-chars (enc-encrypt-chars encryption-key chars)))
-      (cond ((= 0 encryption-key) (message "error: invalid key (enc)"))
-            (t (progn
-                 (delete-region (region-beginning) (region-end))
-                 (insert (enc-join-chars encrypted-chars)))))))
+  (let ((encryption-key (string-to-number encryption-key-string)))
+    (cond ((= 0 encryption-key) (message "error: invalid key (enc)"))
+          (t (let ((encrypted-string (_thread (buffer-substring
+                                                (region-beginning)
+                                                (region-end))
+                                       'string-to-list
+                                       (lambda (chars)
+                                         (enc-encrypt-chars encryption-key chars))
+                                       'enc-join-chars)))
+
+                 (delete-region (region-beginning) (region-end)) ; delete region
+                 (insert encrypted-string) ; insert encrypted string
+                 (message "enc: region encrypted/decrypted"))))))
+
 
 
 ;; enc-decrypt-region :: string -> nil (impure)

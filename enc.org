@@ -1,0 +1,8 @@
+#+title: enc
+
+This is a test. This is only a test. Here's my credit card information: (8512 2596 1628 940).
+Have fun.
+
+Encrypt buffer (enc-encrypt-buffer, enc-decrypt-buffer).
+
+Encrypt region (enc-encrypt-region, enc-decrypt-region).

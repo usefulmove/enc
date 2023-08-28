@@ -6,7 +6,7 @@
 ;; Maintainer: Duane Edmonds <duane.edmonds@gmail.com>
 ;; Created: August 26, 2023
 ;; Modified: August 27, 2023
-;; Version: 0.0.3
+;; Version: 0.0.4
 ;; Keywords: extensions files data processes tools
 ;; Homepage: https://github.com/usefulmove/enc
 ;; Package-Requires: ((emacs "24.3"))
@@ -19,38 +19,9 @@
 ;;
 ;; Code:
 
+(load-file "~/repos/epic/src/epic.el") ; load epic functional library
 (load-file (concat (file-name-directory load-file-name) ; load enc.el (from same directory)
                    "enc.el"))
-
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; helper functions
-
-;; fold :: (U -> T -> U) -> U -> [T] -> U
-(defun fold (f acc lst)
-  (cond ((null lst) acc)
-        (t (fold f (funcall f acc (car lst)) (cdr lst)))))
-
-
-;; partial :: (... -> T -> U) -> [...] -> (T -> U)
-(defun partial (&rest args)
-  "Return unary function when passed an nary function and (- n 1) arguments."
-  (let ((f (car args))
-        (fargs (cdr args)))
-    (lambda (a)
-      (apply f (append fargs (list a))))))
-
-
-;; thread :: T -> [(T -> T)] -> T
-(defun thread (&rest args)
-  ;(message (concat (car args) (apply 'concat (cdr args)))))
-  (let ((seed (car args))
-        (fns (cdr args)))
-    (fold
-      (lambda (acc f)
-        (funcall f acc))
-      seed
-      fns)))
 
 
 
@@ -78,10 +49,12 @@
 
    (lambda (s) ; lambda :: string -> string
      (let ((key 313))
-       (thread s
+       (_thread s
          'string-to-list
-         (partial 'enc-encrypt-chars key)
-         (partial 'enc-encrypt-chars (- key))
+         (lambda (chars)
+           (enc-encrypt-chars key chars))
+         (lambda (chars)
+           (enc-encrypt-chars (- key) chars))
          'join-chars)))
 
    "lorem ipsum dolor sit amet, consectetur adipiscing elit"))
