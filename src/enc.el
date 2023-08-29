@@ -5,7 +5,7 @@
 ;; Author: Duane Edmonds <duane.edmonds@gmail.com>
 ;; Maintainer: Duane Edmonds <duane.edmonds@gmail.com>
 ;; Created: August 23, 2023
-;; Modified: August 27, 2023
+;; Modified: August 28, 2023
 ;; Version: 0.0.5
 ;; Keywords: extensions files data processes tools
 ;; Homepage: https://github.com/usefulmove/enc
@@ -52,13 +52,6 @@
     (reverse (mapcar encrypt-char chars))))
 
 
-;; enc-update-buffer :: string -> nil (impure)
-(defun enc-update-buffer (s)
-  "Replace the contents of the current buffer with character stream."
-  (delete-region (point-min) (point-max))
-  (insert s))
-
-
 ;; enc-join-chars :: [char] -> string
 (defun enc-join-chars (chars)
   "Join character list into a string."
@@ -71,6 +64,14 @@
   (let* ((chars (string-to-list s)))
     (enc-join-chars (cond ((equal ?- (car chars)) (cdr chars))
                           (t (cons ?- chars))))))
+
+
+;; enc-update-buffer :: string -> nil (impure)
+(defun enc-update-buffer (s)
+  "Replace the contents of the current buffer with character stream."
+  (delete-region (point-min) (point-max))
+  (insert s))
+
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
