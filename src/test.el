@@ -5,8 +5,8 @@
 ;; Author: Duane Edmonds <duane.edmonds@gmail.com>
 ;; Maintainer: Duane Edmonds <duane.edmonds@gmail.com>
 ;; Created: August 26, 2023
-;; Modified: August 27, 2023
-;; Version: 0.0.5
+;; Modified: August 30, 2023
+;; Version: 0.0.6
 ;; Keywords: extensions files data processes tools
 ;; Homepage: https://github.com/usefulmove/enc
 ;; Package-Requires: ((emacs "24.3"))
@@ -81,16 +81,22 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; test execution
 
-(defun test-run-tests ()
-  (let* ((prelude "enc-test ... "))
+(defun execute-tests (prelude fns)
+  (cond ((null fns) nil)
+        (t (funcall (car fns) prelude)
+           (execute-tests prelude (cdr fns)))))
+
+(defun test-run-tests (&rest tests)
+  (let ((prelude "enc-test ... "))
     (message (concat prelude "running tests..."))
-    (test-enc-encrypt-char-with-key prelude) ; encrypt char
-    (test-enc-negate-string prelude) ; string negation
-    (test-enc-string-encryption prelude) ; string encryption
-    (test-enc-round-trip prelude) ; round-trip
+    (execute-tests prelude tests)
     (message (concat prelude "passed all tests"))))
 
-(test-run-tests)
+(test-run-tests
+ 'test-enc-encrypt-char-with-key
+ 'test-enc-negate-string
+ 'test-enc-string-encryption
+ 'test-enc-round-trip)
 
 
 
