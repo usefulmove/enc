@@ -1,4 +1,4 @@
-;;; test.el --- Unit tests for enc encryption package -*- lexical-binding: t; -*-
+;;; enc-test.el --- Unit tests for enc encryption package -*- lexical-binding: t; -*-
 ;;
 ;; Copyright (C) 2023 Duane Edmonds
 ;;
@@ -6,7 +6,7 @@
 ;; Maintainer: Duane Edmonds <duane.edmonds@gmail.com>
 ;; Created: August 26, 2023
 ;; Modified: September 2, 2023
-;; Version: 0.0.7
+;; Version: 0.0.8
 ;; Keywords: extensions files data processes tools
 ;; Homepage: https://github.com/usefulmove/enc
 ;; Package-Requires: ((emacs "24.3"))
@@ -19,7 +19,7 @@
 ;;
 ;; Code:
 
-(load-file "~/repos/epic/src/epic.el") ; load epic functional library
+(load-file "~/repos/cora/src/cora.el") ; load Cora language
 (load-file (concat (file-name-directory load-file-name) ; load enc.el (from same directory)
                    "enc.el"))
 
@@ -28,50 +28,47 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; test definitions
 
-(defun test-enc-negate-string (error-prelude)
+(defun enc-test-negate-string (error-prelude)
   (when (not (equal "8" (enc-string-negate "-8")))
     (error (concat error-prelude "error: negate string test(s) failed"))))
 
 
-(defun test-enc-encrypt-char-with-key (error-prelude)
+(defun enc-test-encrypt-char-with-key (error-prelude)
   (when (not (equal ?- (funcall (enc-encrypt-char-with-key 0) ?-)))
     (error (concat error-prelude "error: encrypt char test(s) failed")))
   (when (not (equal ?` (funcall (enc-encrypt-char-with-key -3) ?c)))
     (error (concat error-prelude "error: encrypt char test(s) failed"))))
 
 
-(defun test-enc-string-encryption (error-prelude)
-  ((lambda (f s s-enc)
+(defun enc-test-string-encryption (error-prelude)
+  ((cora (f s s-enc)
      (when (not (equal s-enc (funcall f s)))
        (error (concat
                 error-prelude
                 "error: string encryption test(s) failed"))))
 
-   (lambda (s) ; lambda :: string -> string
+   (cora (s) ; _ :: string -> string
      (let ((key 313))
-       (_thread s
-         (lambda (chars)
-           (enc-encrypt-chars key chars))
+       (thread s
+         (cora (chars) (enc-encrypt-chars key chars))
          'enc-join-chars)))
 
    "lorem ipsum dolor sit amet, consectetur adipiscing elit"
    "1&)\"<$+& 0&-&!}</21\"1 \"0+, <H1\"*}<1&0</,),!<*20-&<*\"/,)"))
 
 
-(defun test-enc-round-trip (error-prelude)
-  ((lambda (f s)
+(defun enc-test-round-trip (error-prelude)
+  ((cora (f s)
      (when (not (equal s (funcall f s)))
        (error (concat
                 error-prelude
                 "error: round-trip encryption test(s) failed"))))
 
-   (lambda (s) ; lambda :: string -> string
+   (cora (s) ; _ :: string -> string
      (let ((key 313))
-       (_thread s
-         (lambda (chars)
-           (enc-encrypt-chars key chars))
-         (lambda (chars)
-           (enc-encrypt-chars (- key) chars))
+       (thread s
+         (cora (chars) (enc-encrypt-chars key chars))
+         (cora (chars) (enc-encrypt-chars (- key) chars))
          'enc-join-chars)))
 
    "lorem ipsum dolor sit amet, consectetur adipiscing elit"))
@@ -92,13 +89,14 @@
 
 
 (test-run-tests
- 'test-enc-encrypt-char-with-key
- 'test-enc-negate-string
- 'test-enc-string-encryption
- 'test-enc-round-trip)
+ 'enc-test-encrypt-char-with-key
+ 'enc-test-negate-string
+ 'enc-test-string-encryption
+ 'enc-test-round-trip)
 
 
 
 
 (provide 'test)
-;;; test.el ends here
+(provide 'enc-test)
+;;; enc-test.el ends here
