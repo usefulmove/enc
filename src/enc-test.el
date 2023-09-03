@@ -6,7 +6,7 @@
 ;; Maintainer: Duane Edmonds <duane.edmonds@gmail.com>
 ;; Created: August 26, 2023
 ;; Modified: September 3, 2023
-;; Version: 0.0.9
+;; Version: 0.0.10
 ;; Keywords: extensions files data processes tools
 ;; Homepage: https://github.com/usefulmove/enc
 ;; Package-Requires: ((emacs "24.3"))
@@ -81,7 +81,7 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; test execution
 
-(defun test-run-tests (&rest tests)
+(defun enc-test-run-tests (&rest tests)
   (letrec ((prelude "enc-test ... ")
            (execute-tests (lambda (fns)
                             (cond ((null fns) nil)
@@ -92,7 +92,7 @@
     (message (concat prelude "passed all tests"))))
 
 
-(test-run-tests
+(enc-test-run-tests
  'enc-test-encrypt-char-with-key
  'enc-test-negate-string
  'enc-test-string-encryption
