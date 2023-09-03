@@ -5,8 +5,8 @@
 ;; Author: Duane Edmonds <duane.edmonds@gmail.com>
 ;; Maintainer: Duane Edmonds <duane.edmonds@gmail.com>
 ;; Created: August 26, 2023
-;; Modified: September 2, 2023
-;; Version: 0.0.8
+;; Modified: September 3, 2023
+;; Version: 0.0.9
 ;; Keywords: extensions files data processes tools
 ;; Homepage: https://github.com/usefulmove/enc
 ;; Package-Requires: ((emacs "24.3"))
@@ -34,23 +34,26 @@
 
 
 (defun enc-test-encrypt-char-with-key (error-prelude)
-  (when (not (equal ?- (funcall (enc-encrypt-char-with-key 0) ?-)))
+  (when (not (equal ?-
+                    (call (enc-encrypt-char-with-key 0) ?-)))
     (error (concat error-prelude "error: encrypt char test(s) failed")))
-  (when (not (equal ?` (funcall (enc-encrypt-char-with-key -3) ?c)))
+  (when (not (equal ?`
+                    (call (enc-encrypt-char-with-key -3) ?c)))
     (error (concat error-prelude "error: encrypt char test(s) failed"))))
 
 
 (defun enc-test-string-encryption (error-prelude)
-  ((cora (f s s-enc)
-     (when (not (equal s-enc (funcall f s)))
+  ((lambda (f s s-enc)
+     (when (not (equal s-enc
+                       (call f s)))
        (error (concat
                 error-prelude
                 "error: string encryption test(s) failed"))))
 
-   (cora (s) ; _ :: string -> string
+   (lambda (s) ; _ :: string -> string
      (let ((key 313))
        (thread s
-         (cora (chars) (enc-encrypt-chars key chars))
+         (lambda (chars) (enc-encrypt-chars key chars))
          'enc-join-chars)))
 
    "lorem ipsum dolor sit amet, consectetur adipiscing elit"
@@ -58,17 +61,17 @@
 
 
 (defun enc-test-round-trip (error-prelude)
-  ((cora (f s)
-     (when (not (equal s (funcall f s)))
+  ((lambda (f s)
+     (when (not (equal s (call f s)))
        (error (concat
                 error-prelude
                 "error: round-trip encryption test(s) failed"))))
 
-   (cora (s) ; _ :: string -> string
+   (lambda (s) ; _ :: string -> string
      (let ((key 313))
        (thread s
-         (cora (chars) (enc-encrypt-chars key chars))
-         (cora (chars) (enc-encrypt-chars (- key) chars))
+         (lambda (chars) (enc-encrypt-chars key chars))
+         (lambda (chars) (enc-encrypt-chars (- key) chars))
          'enc-join-chars)))
 
    "lorem ipsum dolor sit amet, consectetur adipiscing elit"))
@@ -80,11 +83,12 @@
 
 (defun test-run-tests (&rest tests)
   (letrec ((prelude "enc-test ... ")
-           (execute-tests (cond ((null tests) nil)
-                                (t (funcall (car tests) prelude)
-                                   (execute-tests prelude (cdr tests))))))
+           (execute-tests (lambda (fns)
+                            (cond ((null fns) nil)
+                                  (t (call (car fns) prelude)
+                                     (call execute-tests (cdr fns)))))))
     (message (concat prelude "running tests..."))
-    (execute-tests prelude tests)
+    (call execute-tests tests)
     (message (concat prelude "passed all tests"))))
 
 
@@ -97,6 +101,5 @@
 
 
 
-(provide 'test)
 (provide 'enc-test)
 ;;; enc-test.el ends here

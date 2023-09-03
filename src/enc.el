@@ -5,8 +5,8 @@
 ;; Author: Duane Edmonds <duane.edmonds@gmail.com>
 ;; Maintainer: Duane Edmonds <duane.edmonds@gmail.com>
 ;; Created: August 23, 2023
-;; Modified: August 31, 2023
-;; Version: 0.0.6
+;; Modified: September 2, 2023
+;; Version: 0.0.8
 ;; Keywords: extensions files data processes tools
 ;; Homepage: https://github.com/usefulmove/enc
 ;; Package-Requires: ((emacs "24.3"))
@@ -19,7 +19,7 @@
 ;;
 ;;; Code:
 
-(load-file "~/repos/epic/src/epic.el") ; load epic functional library
+(load-file "~/repos/cora/src/cora.el") ; load Cora language
 
 
 
@@ -40,7 +40,7 @@
     (let ((base 32)
           (cap 127))
       (cond ((or (< ord base)
-                 (> ord (_inc cap))) ord) ; only modify characters in range
+                 (> ord (inc cap))) ord) ; only modify characters in range
             (t (+ base
                   (mod (+ (- ord base) encryption-key)
                             (- cap base))))))))
@@ -84,7 +84,7 @@
   (interactive "sEnter encryption key: ")
   (let ((encryption-key (string-to-number encryption-key-string)))
     (cond ((= 0 encryption-key) (message "error: invalid key (enc)"))
-          (t (let ((encrypted-string (_thread (enc-read-buffer-contents)
+          (t (let ((encrypted-string (thread (enc-read-buffer-contents)
                                        (lambda (chars)
                                           (enc-encrypt-chars encryption-key chars))
                                        'enc-join-chars)))
@@ -108,9 +108,9 @@
   (interactive "sEnter encryption key: ")
   (let ((encryption-key (string-to-number encryption-key-string)))
     (cond ((= 0 encryption-key) (message "error: invalid key (enc)"))
-          (t (let ((encrypted-string (_thread (buffer-substring
-                                                (region-beginning)
-                                                (region-end))
+          (t (let ((encrypted-string (thread (buffer-substring
+                                               (region-beginning)
+                                               (region-end))
                                        (lambda (chars)
                                          (enc-encrypt-chars encryption-key chars))
                                        'enc-join-chars)))
