@@ -35,7 +35,7 @@
 ;; enc-encrypt-char-with-key :: encryption-key -> (char -> char)
 (defun enc-encrypt-char-with-key (encryption-key)
   "Encrypt character using ENCRYPTION-KEY function decorator. Return key-specific
-  encryption function."
+encryption function."
   (lambda (ord)
     (let ((base 32)
           (cap 127))
@@ -104,7 +104,8 @@
 
 ;; enc-encrypt-region :: string -> nil (IMPURE)
 (defun enc-encrypt-region (encryption-key-string)
-  "Encrypt contents of selected region using encryption key (ENCRYPTION-KEY-STRING)."
+  "Encrypt contents of selected region using encryption key
+(ENCRYPTION-KEY-STRING)."
   (interactive "sEnter encryption key: ")
   (let ((encryption-key (string-to-number encryption-key-string)))
     (cond ((= 0 encryption-key) (message "error: invalid key (enc)"))
@@ -123,7 +124,8 @@
 
 ;; enc-decrypt-region :: string -> nil (IMPURE)
 (defun enc-decrypt-region (encryption-key-string)
-  "Decrypt contents of selected region using encryption key (ENCRYPTION-KEY-STRING)."
+  "Decrypt contents of selected region using encryption key
+(ENCRYPTION-KEY-STRING)."
   (interactive "sEnter decryption key: ")
   (enc-encrypt-region (enc-string-negate encryption-key-string)))
 
