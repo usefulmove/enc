@@ -5,7 +5,7 @@
 ;; Author: Duane Edmonds <duane.edmonds@gmail.com>
 ;; Maintainer: Duane Edmonds <duane.edmonds@gmail.com>
 ;; Created: August 23, 2023
-;; Modified: September 2, 2023
+;; Modified: September 3, 2023
 ;; Version: 0.0.8
 ;; Keywords: extensions files data processes tools
 ;; Homepage: https://github.com/usefulmove/enc
@@ -67,7 +67,7 @@
                           (t (cons ?- chars))))))
 
 
-;; enc-update-buffer :: string -> nil (impure)
+;; enc-update-buffer :: string -> nil (IMPURE)
 (defun enc-update-buffer (s)
   "Replace the contents of the current buffer with S."
   (delete-region (point-min) (point-max))
@@ -78,7 +78,7 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; interactive commands
 
-;; enc-encrypt-buffer :: string -> nil (impure)
+;; enc-encrypt-buffer :: string -> nil (IMPURE)
 (defun enc-encrypt-buffer (encryption-key-string)
   "Encrypt contents of current buffer using encryption key (ENCRYPTION-KEY-STRING)."
   (interactive "sEnter encryption key: ")
@@ -94,7 +94,7 @@
 
 
 
-;; enc-decrypt-buffer :: string -> nil (impure)
+;; enc-decrypt-buffer :: string -> nil (IMPURE)
 (defun enc-decrypt-buffer (encryption-key-string)
   "Decrypt contents of current buffer using encryption key (ENCRYPTION-KEY-STRING)."
   (interactive "sEnter decryption key: ")
@@ -102,7 +102,7 @@
 
 
 
-;; enc-encrypt-region :: string -> nil (impure)
+;; enc-encrypt-region :: string -> nil (IMPURE)
 (defun enc-encrypt-region (encryption-key-string)
   "Encrypt contents of selected region using encryption key (ENCRYPTION-KEY-STRING)."
   (interactive "sEnter encryption key: ")
@@ -121,7 +121,7 @@
 
 
 
-;; enc-decrypt-region :: string -> nil (impure)
+;; enc-decrypt-region :: string -> nil (IMPURE)
 (defun enc-decrypt-region (encryption-key-string)
   "Decrypt contents of selected region using encryption key (ENCRYPTION-KEY-STRING)."
   (interactive "sEnter decryption key: ")
