@@ -38,7 +38,7 @@
 (defun enc-encrypt-char-with-key (encryption-key)
   "Encrypt character using ENCRYPTION-KEY function decorator. Return key-specific
 encryption function."
-  (lambda (ord)
+  (fn (ord)
     (let ((base 32)
           (cap 127))
       (if (or (< ord base) ; ignore characters lower than base or
@@ -89,7 +89,7 @@ encryption function."
     (if (= 0 encryption-key) (message "error: invalid key (enc)")
         ; overwrite buffer with encrypted string
         (enc-update-buffer (thread (enc-read-buffer-contents)
-                             (lambda (chars)
+                             (fn (chars)
                                (enc-encrypt-chars encryption-key chars))
                              'enc-join-chars)))))
 
@@ -108,15 +108,15 @@ encryption function."
   (interactive "sEnter encryption key: ")
   (let ((encryption-key (string-to-number encryption-key-string)))
     (if (= 0 encryption-key) (message "error: invalid key (enc)")
-        ; delete current region and insert encrypted string
-        (do (delete-region (region-beginning)
-                           (region-end))
-            (insert (thread (buffer-substring
-                              (region-beginning)
-                              (region-end))
-                      (lambda (chars)
-                        (enc-encrypt-chars encryption-key chars))
-                      'enc-join-chars))))))
+        (do ; delete current region and insert encrypted string
+          (delete-region (region-beginning)
+                         (region-end))
+          (insert (thread (buffer-substring
+                            (region-beginning)
+                            (region-end))
+                    (fn (chars)
+                      (enc-encrypt-chars encryption-key chars))
+                    'enc-join-chars))))))
 
 
 ;; enc-decrypt-region :: string -> nil (IMPURE)
