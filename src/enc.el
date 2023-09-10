@@ -19,8 +19,10 @@
 ;;
 ;;; Code:
 
-(load-file "~/repos/cora/src/cora.el") ; load Cora language
 
+; load Cora language
+(add-to-list 'load-path "~/repos/cora/src/")
+(require 'cora)
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -39,18 +41,19 @@ encryption function."
   (lambda (ord)
     (let ((base 32)
           (cap 127))
-      (cond ((or (< ord base)
-                 (> ord (inc cap))) ord) ; only modify characters in range
-            (t (+ base
-                  (mod (+ (- ord base) encryption-key)
-                            (- cap base))))))))
+      (if (or (< ord base) ; ignore characters lower than base or
+              (> ord (inc cap))) ord ; higher than cap
+          (+ base
+             (mod (+ (- ord base)
+                     encryption-key)
+                  (- cap base)))))))
 
 
 ;; enc-encrypt-chars :: encryption-key -> [char] -> [char]
 (defun enc-encrypt-chars (encryption-key chars)
   "Encrypt character stream (CHARS) using ENCRYPTION-KEY."
-  (let ((encrypt-char (enc-encrypt-char-with-key encryption-key)))
-    (reverse (mapcar encrypt-char chars))))
+  (reverse (map (enc-encrypt-char-with-key encryption-key)
+                chars)))
 
 
 ;; enc-join-chars :: [char] -> string
@@ -70,9 +73,9 @@ encryption function."
 ;; enc-update-buffer :: string -> nil (IMPURE)
 (defun enc-update-buffer (s)
   "Replace the contents of the current buffer with S."
-  (delete-region (point-min) (point-max))
+  (delete-region (point-min)
+                 (point-max))
   (insert s))
-
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -83,15 +86,12 @@ encryption function."
   "Encrypt contents of current buffer using encryption key (ENCRYPTION-KEY-STRING)."
   (interactive "sEnter encryption key: ")
   (let ((encryption-key (string-to-number encryption-key-string)))
-    (cond ((= 0 encryption-key) (message "error: invalid key (enc)"))
-          (t (let ((encrypted-string (thread (enc-read-buffer-contents)
-                                       (lambda (chars)
-                                          (enc-encrypt-chars encryption-key chars))
-                                       'enc-join-chars)))
-
-               (enc-update-buffer encrypted-string) ; overwrite buffer
-               (message "enc: buffer encrypted/decrypted"))))))
-
+    (if (= 0 encryption-key) (message "error: invalid key (enc)")
+        ; overwrite buffer with encrypted string
+        (enc-update-buffer (thread (enc-read-buffer-contents)
+                             (lambda (chars)
+                               (enc-encrypt-chars encryption-key chars))
+                             'enc-join-chars)))))
 
 
 ;; enc-decrypt-buffer :: string -> nil (IMPURE)
@@ -101,25 +101,22 @@ encryption function."
   (enc-encrypt-buffer (enc-string-negate encryption-key-string)))
 
 
-
 ;; enc-encrypt-region :: string -> nil (IMPURE)
 (defun enc-encrypt-region (encryption-key-string)
   "Encrypt contents of selected region using encryption key
 (ENCRYPTION-KEY-STRING)."
   (interactive "sEnter encryption key: ")
   (let ((encryption-key (string-to-number encryption-key-string)))
-    (cond ((= 0 encryption-key) (message "error: invalid key (enc)"))
-          (t (let ((encrypted-string (thread (buffer-substring
-                                               (region-beginning)
-                                               (region-end))
-                                       (lambda (chars)
-                                         (enc-encrypt-chars encryption-key chars))
-                                       'enc-join-chars)))
-
-                 (delete-region (region-beginning) (region-end)) ; delete region
-                 (insert encrypted-string) ; insert encrypted string
-                 (message "enc: region encrypted/decrypted"))))))
-
+    (if (= 0 encryption-key) (message "error: invalid key (enc)")
+        ; delete current region and insert encrypted string
+        (do (delete-region (region-beginning)
+                           (region-end))
+            (insert (thread (buffer-substring
+                              (region-beginning)
+                              (region-end))
+                      (lambda (chars)
+                        (enc-encrypt-chars encryption-key chars))
+                      'enc-join-chars))))))
 
 
 ;; enc-decrypt-region :: string -> nil (IMPURE)
@@ -128,7 +125,6 @@ encryption function."
 (ENCRYPTION-KEY-STRING)."
   (interactive "sEnter decryption key: ")
   (enc-encrypt-region (enc-string-negate encryption-key-string)))
-
 
 
 (provide 'enc)

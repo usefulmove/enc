@@ -5,8 +5,8 @@
 ;; Author: Duane Edmonds <duane.edmonds@gmail.com>
 ;; Maintainer: Duane Edmonds <duane.edmonds@gmail.com>
 ;; Created: August 26, 2023
-;; Modified: September 3, 2023
-;; Version: 0.0.10
+;; Modified: September 9, 2023
+;; Version: 0.0.11
 ;; Keywords: extensions files data processes tools
 ;; Homepage: https://github.com/usefulmove/enc
 ;; Package-Requires: ((emacs "24.3"))
@@ -19,14 +19,20 @@
 ;;
 ;; Code:
 
-(load-file "~/repos/cora/src/cora.el") ; load Cora language
-(load-file (concat (file-name-directory load-file-name) ; load enc.el (from same directory)
-                   "enc.el"))
 
+; load Cora language
+(add-to-list 'load-path "~/repos/cora/src/")
+(require 'cora)
+
+
+; load enc.el from same directory as (this) test file
+(load-file (concat (file-name-directory load-file-name)
+                   "enc.el"))
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; test definitions
+
 
 (defun enc-test-negate-string (error-prelude)
   (when (not (equal "8" (enc-string-negate "-8")))
@@ -77,9 +83,9 @@
    "lorem ipsum dolor sit amet, consectetur adipiscing elit"))
 
 
-
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; test execution
+
 
 (defun enc-test-run-tests (&rest tests)
   (letrec ((prelude "enc-test ... ")
@@ -97,8 +103,6 @@
  'enc-test-negate-string
  'enc-test-string-encryption
  'enc-test-round-trip)
-
-
 
 
 (provide 'enc-test)
