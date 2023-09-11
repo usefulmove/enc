@@ -6,7 +6,7 @@
 ;; Maintainer: Duane Edmonds <duane.edmonds@gmail.com>
 ;; Created: August 23, 2023
 ;; Modified: September 10, 2023
-;; Version: 0.0.10
+;; Version: 0.0.11
 ;; Keywords: extensions files data processes tools
 ;; Homepage: https://github.com/usefulmove/enc
 ;; Package-Requires: ((emacs "24.3"))
@@ -66,8 +66,9 @@ encryption function."
 (defun enc-string-negate (s)
   "Negate value stored as string (S)."
   (let* ((chars (string-to-list s)))
-    (enc-join-chars (cond ((equal ?- (car chars)) (cdr chars))
-                          (t (cons ?- chars))))))
+    (enc-join-chars (if (equal ?- (car chars))
+                        (cdr chars)
+                        (cons ?- chars)))))
 
 
 ;; enc-update-buffer :: string -> nil (IMPURE)
