@@ -5,8 +5,8 @@
 ;; Author: Duane Edmonds <duane.edmonds@gmail.com>
 ;; Maintainer: Duane Edmonds <duane.edmonds@gmail.com>
 ;; Created: August 23, 2023
-;; Modified: September 9, 2023
-;; Version: 0.0.9
+;; Modified: September 10, 2023
+;; Version: 0.0.10
 ;; Keywords: extensions files data processes tools
 ;; Homepage: https://github.com/usefulmove/enc
 ;; Package-Requires: ((emacs "24.3"))
@@ -38,7 +38,7 @@
 (defun enc-encrypt-char-with-key (encryption-key)
   "Encrypt character using ENCRYPTION-KEY function decorator. Return key-specific
 encryption function."
-  (fn (ord)
+  (lambda (ord)
     (let ((base 32)
           (cap 127))
       (if (or (< ord base) ; ignore characters lower than base or
@@ -73,8 +73,9 @@ encryption function."
 ;; enc-update-buffer :: string -> nil (IMPURE)
 (defun enc-update-buffer (s)
   "Replace the contents of the current buffer with S."
-  (delete-region (point-min)
-                 (point-max))
+  (delete-region
+    (point-min)
+    (point-max))
   (insert s))
 
 
@@ -89,7 +90,7 @@ encryption function."
     (if (= 0 encryption-key) (message "error: invalid key (enc)")
         ; overwrite buffer with encrypted string
         (enc-update-buffer (thread (enc-read-buffer-contents)
-                             (fn (chars)
+                             (lambda (chars)
                                (enc-encrypt-chars encryption-key chars))
                              'enc-join-chars)))))
 
@@ -108,13 +109,15 @@ encryption function."
   (interactive "sEnter encryption key: ")
   (let ((encryption-key (string-to-number encryption-key-string)))
     (if (= 0 encryption-key) (message "error: invalid key (enc)")
-        (do ; delete current region and insert encrypted string
-          (delete-region (region-beginning)
-                         (region-end))
-          (insert (thread (buffer-substring
-                            (region-beginning)
-                            (region-end))
-                    (fn (chars)
+        (let ((region-contents  (buffer-substring
+                                  (region-beginning)
+                                  (region-end))))
+          ; delete current region and insert encrypted string
+          (delete-region
+            (region-beginning)
+            (region-end))
+          (insert (thread region-contents
+                    (lambda (chars)
                       (enc-encrypt-chars encryption-key chars))
                     'enc-join-chars))))))
 

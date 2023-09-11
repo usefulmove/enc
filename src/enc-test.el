@@ -5,8 +5,8 @@
 ;; Author: Duane Edmonds <duane.edmonds@gmail.com>
 ;; Maintainer: Duane Edmonds <duane.edmonds@gmail.com>
 ;; Created: August 26, 2023
-;; Modified: September 9, 2023
-;; Version: 0.0.12
+;; Modified: September 10, 2023
+;; Version: 0.0.14
 ;; Keywords: extensions files data processes tools
 ;; Homepage: https://github.com/usefulmove/enc
 ;; Package-Requires: ((emacs "24.3"))
@@ -59,7 +59,8 @@
    (lambda (s) ; _ :: string -> string
      (let ((key 313))
        (thread s
-         (lambda (chars) (enc-encrypt-chars key chars))
+         (lambda (chars)
+           (enc-encrypt-chars key chars))
          'enc-join-chars)))
 
    "lorem ipsum dolor sit amet, consectetur adipiscing elit"
@@ -76,8 +77,10 @@
    (lambda (s) ; _ :: string -> string
      (let ((key 313))
        (thread s
-         (lambda (chars) (enc-encrypt-chars key chars))
-         (lambda (chars) (enc-encrypt-chars (- key) chars))
+         (lambda (chars)
+           (enc-encrypt-chars key chars))
+         (lambda (chars)
+           (enc-encrypt-chars (- key) chars))
          'enc-join-chars)))
 
    "lorem ipsum dolor sit amet, consectetur adipiscing elit"))
@@ -90,9 +93,10 @@
 (defun enc-test-run-tests (&rest tests)
   (letrec ((prelude "enc-test ... ")
            (execute-tests (lambda (fns)
-                            (cond ((null fns) nil)
-                                  (t (call (car fns) prelude)
-                                     (call execute-tests (cdr fns)))))))
+                            (if (null fns) nil
+                                (do
+                                  (call (car fns) prelude)
+                                  (call execute-tests (cdr fns)))))))
     (message (concat prelude "running tests..."))
     (call execute-tests tests)
     (message (concat prelude "passed all tests"))))
