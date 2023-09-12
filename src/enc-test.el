@@ -5,8 +5,8 @@
 ;; Author: Duane Edmonds <duane.edmonds@gmail.com>
 ;; Maintainer: Duane Edmonds <duane.edmonds@gmail.com>
 ;; Created: August 26, 2023
-;; Modified: September 10, 2023
-;; Version: 0.0.14
+;; Modified: September 11, 2023
+;; Version: 0.0.15
 ;; Keywords: extensions files data processes tools
 ;; Homepage: https://github.com/usefulmove/enc
 ;; Package-Requires: ((emacs "24.3"))
@@ -33,7 +33,6 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; test definitions
 
-
 (defun enc-test-negate-string (error-prelude)
   (when (not (equal "8" (enc-string-negate "-8")))
     (error (concat error-prelude "error: negate string test(s) failed"))))
@@ -56,7 +55,7 @@
                 error-prelude
                 "error: string encryption test(s) failed"))))
 
-   (lambda (s) ; _ :: string -> string
+   (lambda (s)
      (let ((key 313))
        (thread s
          (lambda (chars)
@@ -64,6 +63,7 @@
          'enc-join-chars)))
 
    "lorem ipsum dolor sit amet, consectetur adipiscing elit"
+
    "1&)\"<$+& 0&-&!}</21\"1 \"0+, <H1\"*}<1&0</,),!<*20-&<*\"/,)"))
 
 
@@ -74,7 +74,7 @@
                 error-prelude
                 "error: round-trip encryption test(s) failed"))))
 
-   (lambda (s) ; _ :: string -> string
+   (lambda (s)
      (let ((key 313))
        (thread s
          (lambda (chars)
@@ -83,7 +83,14 @@
            (enc-encrypt-chars (- key) chars))
          'enc-join-chars)))
 
-   "lorem ipsum dolor sit amet, consectetur adipiscing elit"))
+   "lorem ipsum dolor sit amet, consectetur adipiscing elit")
+  (let ((s "lorem ipsum dolor sit amet, consectetur adipiscing elit"))
+    (assert-equal
+      (enc-decrypt-string 512 (enc-encrypt-string 512 s))
+      s
+      (error (concat
+               error-prelude
+               "error: string encryption test(s) failed")))))
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -103,10 +110,10 @@
 
 
 (enc-test-run-tests
- 'enc-test-encrypt-char-with-key
- 'enc-test-negate-string
- 'enc-test-string-encryption
- 'enc-test-round-trip)
+  'enc-test-encrypt-char-with-key
+  'enc-test-negate-string
+  'enc-test-string-encryption
+  'enc-test-round-trip)
 
 
 (provide 'enc-test)
