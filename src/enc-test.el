@@ -5,8 +5,8 @@
 ;; Author: Duane Edmonds <duane.edmonds@gmail.com>
 ;; Maintainer: Duane Edmonds <duane.edmonds@gmail.com>
 ;; Created: August 26, 2023
-;; Modified: September 11, 2023
-;; Version: 0.0.15
+;; Modified: September 12, 2023
+;; Version: 0.0.16
 ;; Keywords: extensions files data processes tools
 ;; Homepage: https://github.com/usefulmove/enc
 ;; Package-Requires: ((emacs "24.3"))
@@ -40,10 +40,10 @@
 
 (defun enc-test-encrypt-char-with-key (error-prelude)
   (when (not (equal ?-
-                    (call (enc-encrypt-char-with-key 0) ?-)))
+                    (call (enc-encrypt-char 0) ?-)))
     (error (concat error-prelude "error: encrypt char test(s) failed")))
   (when (not (equal ?`
-                    (call (enc-encrypt-char-with-key -3) ?c)))
+                    (call (enc-encrypt-char -3) ?c)))
     (error (concat error-prelude "error: encrypt char test(s) failed"))))
 
 

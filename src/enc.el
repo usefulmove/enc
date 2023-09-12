@@ -6,7 +6,7 @@
 ;; Maintainer: Duane Edmonds <duane.edmonds@gmail.com>
 ;; Created: August 23, 2023
 ;; Modified: September 12, 2023
-;; Version: 0.0.12
+;; Version: 0.0.14
 ;; Keywords: extensions files data processes tools
 ;; Homepage: https://github.com/usefulmove/enc
 ;; Package-Requires: ((emacs "24.3"))
@@ -17,9 +17,29 @@
 ;;
 ;;  Description: buffer and region encryption
 ;;
+;;; Warning:
+;;
+;; The encryption method used is based on a basic algorithm, which means:
+;;
+;; 1. It offers basic obfuscation rather than robust security. It is not suitable
+;;    for encrypting sensitive or confidential data.
+;;
+;; 2. Knowledgeable attackers who are aware of this method can reverse-engineer
+;;    the original content, especially if they have multiple encrypted samples.
+;;
+;; 3. Do NOT rely on this for ensuring data privacy or for compliance with data
+;;    protection regulations.
+;;
+;; This encryption is intended for casual use-cases where the primary goal is to
+;; prevent immediate readability, not to provide strong cryptographic protection.
+;;
+;; If you need a secure encryption method, consider using established
+;; cryptographic libraries or packages that implement proven more robust
+;; encryption algorithms.
+;;
 ;;; Code:
 
-; load Cora language
+;; load Cora language
 (add-to-list 'load-path "~/repos/cora/src/")
 (require 'cora)
 
@@ -40,8 +60,8 @@
     (region-beginning)
     (region-end)))
 
-;; enc-encrypt-char-with-key :: encryption-key -> (char -> char)
-(defun enc-encrypt-char-with-key (encryption-key)
+;; enc-encrypt-char :: encryption-key -> (char -> char)
+(defun enc-encrypt-char (encryption-key)
   "Encrypt character using ENCRYPTION-KEY function decorator. Return key-specific
 encryption function."
   (lambda (ord)
@@ -58,7 +78,7 @@ encryption function."
 (defun enc-encrypt-string (encryption-key s)
   "Encrypt string (S) using ENCRYPTION-KEY."
   (thread s
-    (_ (map (enc-encrypt-char-with-key encryption-key) %))
+    (_ (map (enc-encrypt-char encryption-key) %))
     'reverse
     'join-chars))
 
@@ -78,9 +98,7 @@ encryption function."
 ;; enc-update-buffer :: string -> nil (IMPURE)
 (defun enc-update-buffer (s)
   "Replace the contents of the current buffer with S."
-  (delete-region
-    (point-min)
-    (point-max))
+  (erase-buffer)
   (insert s))
 
 ;; enc-update-region :: string -> nil (IMPURE)
