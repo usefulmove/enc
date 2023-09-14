@@ -5,8 +5,8 @@
 ;; Author: Duane Edmonds <duane.edmonds@gmail.com>
 ;; Maintainer: Duane Edmonds <duane.edmonds@gmail.com>
 ;; Created: August 26, 2023
-;; Modified: September 12, 2023
-;; Version: 0.0.16
+;; Modified: September 13, 2023
+;; Version: 0.0.17
 ;; Keywords: extensions files data processes tools
 ;; Homepage: https://github.com/usefulmove/enc
 ;; Package-Requires: ((emacs "24.3"))
@@ -48,42 +48,23 @@
 
 
 (defun enc-test-string-encryption (error-prelude)
-  ((lambda (f s s-enc)
-     (when (not (equal s-enc
-                       (call f s)))
-       (error (concat
-                error-prelude
-                "error: string encryption test(s) failed"))))
-
-   (lambda (s)
-     (let ((key 313))
-       (thread s
-         (lambda (chars)
-           (enc-encrypt-chars key chars))
-         'enc-join-chars)))
-
-   "lorem ipsum dolor sit amet, consectetur adipiscing elit"
-
-   "1&)\"<$+& 0&-&!}</21\"1 \"0+, <H1\"*}<1&0</,),!<*20-&<*\"/,)"))
+  (assert-equal
+    (enc-encrypt-string 313 "lorem ipsum dolor sit amet, consectetur adipiscing elit")
+    "1&)\"<$+& 0&-&!}</21\"1 \"0+, <H1\"*}<1&0</,),!<*20-&<*\"/,)"
+    (error (concat error-prelude "error: string encryption test(s) failed"))))
 
 
 (defun enc-test-round-trip (error-prelude)
-  ((lambda (f s)
-     (when (not (equal s (call f s)))
-       (error (concat
-                error-prelude
-                "error: round-trip encryption test(s) failed"))))
-
-   (lambda (s)
-     (let ((key 313))
-       (thread s
-         (lambda (chars)
-           (enc-encrypt-chars key chars))
-         (lambda (chars)
-           (enc-encrypt-chars (- key) chars))
-         'enc-join-chars)))
-
-   "lorem ipsum dolor sit amet, consectetur adipiscing elit")
+  (let ((s "lorem ipsum dolor sit amet, consectetur adipiscing elit")
+        (key 313))
+    (assert-equal
+      (thread s
+        (lambda (str)
+          (enc-encrypt-string key str))
+        (lambda (str)
+          (enc-encrypt-string (- key) str)))
+      s
+      (error (concat error-prelude "error: round-trip encryption test(s) failed"))))
   (let ((s "lorem ipsum dolor sit amet, consectetur adipiscing elit"))
     (assert-equal
       (enc-decrypt-string 512 (enc-encrypt-string 512 s))
@@ -114,6 +95,7 @@
   'enc-test-negate-string
   'enc-test-string-encryption
   'enc-test-round-trip)
+
 
 
 (provide 'enc-test)
