@@ -5,8 +5,8 @@
 ;; Author: Duane Edmonds <duane.edmonds@gmail.com>
 ;; Maintainer: Duane Edmonds <duane.edmonds@gmail.com>
 ;; Created: August 23, 2023
-;; Modified: September 13, 2023
-;; Version: 0.0.15
+;; Modified: September 14, 2023
+;; Version: 0.0.16
 ;; Keywords: extensions files data processes tools
 ;; Homepage: https://github.com/usefulmove/enc
 ;; Package-Requires: ((emacs "24.3"))
@@ -48,7 +48,7 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; core functions
 
-;; enc-read-buffer :: nil -> string
+;; enc-read-buffer :: nil -> string (IMPURE)
 (defun enc-read-buffer ()
   "Read the contents of the current buffer."
   (buffer-substring-no-properties
@@ -56,7 +56,7 @@
     (point-max)))
 
 
-;; enc-read-region :: nil -> string
+;; enc-read-region :: nil -> string (IMPURE)
 (defun enc-read-region ()
   "Read the contents of the current region."
   (buffer-substring
@@ -68,24 +68,22 @@
 (defun enc-encrypt-char (encryption-key)
   "Encrypt character using ENCRYPTION-KEY function decorator. Return key-specific
 encryption function."
-  (lambda (ord)
-    (let ((base 32)
-          (cap 127))
-      (if (or (< ord base) ; ignore characters lower than base or
-              (> ord (inc cap))) ord ; higher than cap
-          (+ base
-             (mod (+ (- ord base)
-                     encryption-key)
-                  (- cap base)))))))
-
-(fset 'enc-encrypt-char-cached (cache 'enc-encrypt-char))
+  (cache (lambda (ord)
+           (let ((base 32)
+                 (cap 127))
+             (if (or (< ord base) ; ignore characters lower than base or
+                     (> ord (inc cap))) ord ; higher than cap
+                 (+ base
+                    (mod (+ (- ord base)
+                            encryption-key)
+                         (- cap base))))))))
 
 
 ;; enc-encrypt-string :: encryption-key -> string -> string
 (defun enc-encrypt-string (encryption-key s)
   "Encrypt string (S) using ENCRYPTION-KEY."
   (thread s
-    (_ (map (enc-encrypt-char-cached encryption-key) %))
+    (_ (map (enc-encrypt-char encryption-key) %))
     'reverse
     'join-chars))
 

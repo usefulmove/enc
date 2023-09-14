@@ -5,8 +5,8 @@
 ;; Author: Duane Edmonds <duane.edmonds@gmail.com>
 ;; Maintainer: Duane Edmonds <duane.edmonds@gmail.com>
 ;; Created: August 26, 2023
-;; Modified: September 13, 2023
-;; Version: 0.0.17
+;; Modified: September 14, 2023
+;; Version: 0.0.18
 ;; Keywords: extensions files data processes tools
 ;; Homepage: https://github.com/usefulmove/enc
 ;; Package-Requires: ((emacs "24.3"))
@@ -64,14 +64,14 @@
         (lambda (str)
           (enc-encrypt-string (- key) str)))
       s
-      (error (concat error-prelude "error: round-trip encryption test(s) failed"))))
+      (error (concat error-prelude "error: round-trip test(s) failed"))))
   (let ((s "lorem ipsum dolor sit amet, consectetur adipiscing elit"))
     (assert-equal
       (enc-decrypt-string 512 (enc-encrypt-string 512 s))
       s
       (error (concat
                error-prelude
-               "error: string encryption test(s) failed")))))
+               "error: round-trip test(s) failed")))))
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
