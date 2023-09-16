@@ -5,8 +5,8 @@
 ;; Author: Duane Edmonds <duane.edmonds@gmail.com>
 ;; Maintainer: Duane Edmonds <duane.edmonds@gmail.com>
 ;; Created: August 23, 2023
-;; Modified: September 14, 2023
-;; Version: 0.0.16
+;; Modified: September 16, 2023
+;; Version: 0.0.17
 ;; Keywords: extensions files data processes tools
 ;; Homepage: https://github.com/usefulmove/enc
 ;; Package-Requires: ((emacs "24.3"))
@@ -83,7 +83,7 @@ encryption function."
 (defun enc-encrypt-string (encryption-key s)
   "Encrypt string (S) using ENCRYPTION-KEY."
   (thread s
-    (_ (map (enc-encrypt-char encryption-key) %))
+    (\ (c) (map (enc-encrypt-char encryption-key) c))
     'reverse
     'join-chars))
 
