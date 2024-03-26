@@ -1,12 +1,12 @@
 ;;; enc-test.el --- Unit tests for enc encryption package -*- lexical-binding: t; -*-
 ;;
-;; Copyright (C) 2023 Duane Edmonds
+;; Copyright (C) 2024 Duane Edmonds
 ;;
 ;; Author: Duane Edmonds <duane.edmonds@gmail.com>
 ;; Maintainer: Duane Edmonds <duane.edmonds@gmail.com>
 ;; Created: August 26, 2023
-;; Modified: September 14, 2023
-;; Version: 0.0.18
+;; Modified: March 25, 2024
+;; Version: 0.0.19
 ;; Keywords: extensions files data processes tools
 ;; Homepage: https://github.com/usefulmove/enc
 ;; Package-Requires: ((emacs "24.3"))

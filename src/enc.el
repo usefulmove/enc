@@ -1,12 +1,12 @@
 ;;; enc.el --- Buffer and region encryption -*- lexical-binding: t; -*-
 ;;
-;; Copyright (C) 2023 Duane Edmonds
+;; Copyright (C) 2024 Duane Edmonds
 ;;
 ;; Author: Duane Edmonds <duane.edmonds@gmail.com>
 ;; Maintainer: Duane Edmonds <duane.edmonds@gmail.com>
 ;; Created: August 23, 2023
-;; Modified: September 16, 2023
-;; Version: 0.0.17
+;; Modified: March 25, 2024
+;; Version: 0.0.19
 ;; Keywords: extensions files data processes tools
 ;; Homepage: https://github.com/usefulmove/enc
 ;; Package-Requires: ((emacs "24.3"))
@@ -68,15 +68,15 @@
 (defun enc-encrypt-char (encryption-key)
   "Encrypt character using ENCRYPTION-KEY function decorator. Return key-specific
 encryption function."
-  (cache (lambda (ord)
-           (let ((base 32)
-                 (cap 127))
-             (if (or (< ord base) ; ignore characters lower than base or
-                     (> ord (inc cap))) ord ; higher than cap
-                 (+ base
-                    (mod (+ (- ord base)
-                            encryption-key)
-                         (- cap base))))))))
+  (memoize (lambda (ord)
+             (let ((base 32)
+                   (cap 127))
+               (if (or (< ord base) ; ignore characters lower than base or
+                       (> ord (inc cap))) ord ; higher than cap
+                   (+ base
+                      (mod (+ (- ord base)
+                              encryption-key)
+                           (- cap base))))))))
 
 
 ;; enc-encrypt-string :: encryption-key -> string -> string
