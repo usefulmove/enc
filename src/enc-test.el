@@ -1,12 +1,12 @@
 ;;; enc-test.el --- Unit tests for enc encryption package -*- lexical-binding: t; -*-
 ;;
-;; Copyright (C) 2024 Duane Edmonds
+;; Copyright (c) 2024 Robert Duane Edmonds
 ;;
 ;; Author: Duane Edmonds <duane.edmonds@gmail.com>
 ;; Maintainer: Duane Edmonds <duane.edmonds@gmail.com>
 ;; Created: August 26, 2023
-;; Modified: March 25, 2024
-;; Version: 0.0.19
+;; Modified: April 7, 2024
+;; Version: 0.0.20
 ;; Keywords: extensions files data processes tools
 ;; Homepage: https://github.com/usefulmove/enc
 ;; Package-Requires: ((emacs "24.3"))
@@ -20,9 +20,9 @@
 ;; Code:
 
 
-; load Cora language
-(add-to-list 'load-path "~/repos/cora/src/")
-(require 'cora)
+; load Othello library
+(add-to-list 'load-path "~/repos/othello/src/")
+(require 'othello)
 
 
 ; load enc.el from same directory as (this) test file
@@ -58,7 +58,7 @@
   (let ((s "lorem ipsum dolor sit amet, consectetur adipiscing elit")
         (key 313))
     (assert-equal
-      (thread s
+      (o-thread s
         (lambda (str)
           (enc-encrypt-string key str))
         (lambda (str)

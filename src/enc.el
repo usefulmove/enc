@@ -1,12 +1,12 @@
 ;;; enc.el --- Buffer and region encryption -*- lexical-binding: t; -*-
 ;;
-;; Copyright (C) 2024 Duane Edmonds
+;; Copyright (c) 2024 Robert Duane Edmonds
 ;;
 ;; Author: Duane Edmonds <duane.edmonds@gmail.com>
 ;; Maintainer: Duane Edmonds <duane.edmonds@gmail.com>
 ;; Created: August 23, 2023
-;; Modified: March 25, 2024
-;; Version: 0.0.19
+;; Modified: April 7, 2024
+;; Version: 0.0.20
 ;; Keywords: extensions files data processes tools
 ;; Homepage: https://github.com/usefulmove/enc
 ;; Package-Requires: ((emacs "24.3"))
@@ -40,9 +40,9 @@
 ;;; Code:
 
 
-;; load Cora language
-(add-to-list 'load-path "~/repos/cora/src/")
-(require 'cora)
+;; load Othello library
+(add-to-list 'load-path "~/repos/othello/src/")
+(require 'othello)
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -68,24 +68,25 @@
 (defun enc-encrypt-char (encryption-key)
   "Encrypt character using ENCRYPTION-KEY function decorator. Return key-specific
 encryption function."
-  (memoize (lambda (ord)
-             (let ((base 32)
-                   (cap 127))
-               (if (or (< ord base) ; ignore characters lower than base or
-                       (> ord (inc cap))) ord ; higher than cap
-                   (+ base
-                      (mod (+ (- ord base)
-                              encryption-key)
-                           (- cap base))))))))
+  (o-memoize
+   (lambda (ord)
+     (let ((base 32)
+           (cap 127))
+       (if (or (< ord base) ; ignore characters lower than base or
+               (> ord (inc cap))) ord ; higher than cap
+           (+ base
+              (mod (+ (- ord base)
+                      encryption-key)
+                   (- cap base))))))))
 
 
 ;; enc-encrypt-string :: encryption-key -> string -> string
 (defun enc-encrypt-string (encryption-key s)
   "Encrypt string (S) using ENCRYPTION-KEY."
-  (thread s
-    (\ (c) (map (enc-encrypt-char encryption-key) c))
+  (o-thread s
+    (lambda (c) (o-map (enc-encrypt-char encryption-key) c))
     'reverse
-    'join-chars))
+    'o-join-chars))
 
 
 ;; enc-decrypt-string :: encryption-key -> string -> string
@@ -98,8 +99,8 @@ encryption function."
 (defun enc-string-negate (s)
   "Negate value stored as string (S)."
   (let* ((chars (string-to-list s)))
-    (join-chars (if (equal ?- (car chars))
-                    (cdr chars)
+    (o-join-chars (if (equal ?- (car chars))
+                      (cdr chars)
                     (cons ?- chars)))))
 
 
