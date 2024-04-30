@@ -5,8 +5,8 @@
 ;; Author: Duane Edmonds <duane.edmonds@gmail.com>
 ;; Maintainer: Duane Edmonds <duane.edmonds@gmail.com>
 ;; Created: August 23, 2023
-;; Modified: April 10, 2024
-;; Version: 0.0.21
+;; Modified: April 29, 2024
+;; Version: 0.0.22
 ;; Keywords: extensions files data processes tools
 ;; Homepage: https://github.com/usefulmove/enc
 ;; Package-Requires: ((emacs "24.3"))
@@ -73,7 +73,7 @@ encryption function."
      (let ((base 32)
            (cap 127))
        (if (or (< ord base) ; ignore characters lower than base or
-               (> ord (inc cap))) ord ; higher than cap
+               (> ord (o-inc cap))) ord ; higher than cap
            (+ base
               (mod (+ (- ord base)
                       encryption-key)
